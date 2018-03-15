@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegionTree", "RegionTree\RegionTree.csproj", "{FEA1E386-ACD7-4D62-B1DE-6131318BC164}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FEA1E386-ACD7-4D62-B1DE-6131318BC164}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEA1E386-ACD7-4D62-B1DE-6131318BC164}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEA1E386-ACD7-4D62-B1DE-6131318BC164}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEA1E386-ACD7-4D62-B1DE-6131318BC164}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D025A186-BEDA-487B-8E8C-F738287CE4B7}
+	EndGlobalSection
+EndGlobal
