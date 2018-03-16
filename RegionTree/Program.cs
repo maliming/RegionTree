@@ -1,50 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using Abp;
+using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
+using Abp.GeneralTree;
+using Abp.Threading;
+using Microsoft.Extensions.Configuration;
+using MoreLinq;
 using Newtonsoft.Json;
 
 namespace RegionTree
 {
-    public static class StringExtensions
-    {
-        public static bool Is2Root(this string str)
-        {
-            return str.Contains("0000");
-        }
-
-        public static bool Is3Root(this string str)
-        {
-            return str.Contains("00") && !str.Is2Root();
-        }
-    }
-
-
-    public class Region
-    {
-        public int Id { get; set; }
-
-        public string Name { get; set; }
-
-        public string RegionCode { get; set; }
-
-        public string FullName { get; set; }
-
-        public string Code { get; set; }
-
-        public int Level { get; set; }
-
-        [JsonIgnore]
-        public Region Parent { get; set; }
-
-        public int? ParentId { get; set; }
-
-        public ICollection<Region> Children { get; set; }
-    }
-
     internal class Program
     {
+        public static IConfigurationRoot Configuration;
+
         private static void Main(string[] args)
         {
             var client = new HttpClient();
@@ -81,7 +55,7 @@ namespace RegionTree
                 Name = "中国"
             };
 
-            Region lastRoot = root;
+            var lastRoot = root;
             region.ForEach(r =>
             {
                 var curr = new Region
@@ -143,6 +117,32 @@ namespace RegionTree
             });
 
             File.WriteAllText("region.json", JsonConvert.SerializeObject(root, Formatting.Indented));
+
+            using (var abpBootstrapper = AbpBootstrapper.Create<RegionModule>())
+            {
+                abpBootstrapper.Initialize();
+
+                var unitOfWorkManager = abpBootstrapper.IocManager.Resolve<IUnitOfWorkManager>();
+
+                using (var uow = unitOfWorkManager.Begin())
+                {
+                    var regionRepository = abpBootstrapper.IocManager.Resolve<IRepository<Region, int>>();
+                    var regionTreeManager = abpBootstrapper.IocManager.Resolve<GeneralTreeManager<Region, int>>();
+
+                    root.Children.ForEach(x =>
+                    {
+                        x.Parent = null;
+                        AsyncHelper.RunSync(() => regionTreeManager.BulkCreateAsync(x));
+                        unitOfWorkManager.Current.SaveChanges();
+                    });
+
+                    unitOfWorkManager.Current.SaveChanges();
+
+                    var regionTree = regionRepository.GetAll().ToList().ToTree<Region, int>().ToList();
+
+                    uow.Complete();
+                }
+            }
         }
     }
 }
