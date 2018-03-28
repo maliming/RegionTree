@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using Abp.GeneralTree;
 using Newtonsoft.Json;
 
 namespace RegionTree
 {
-    public class Region : Entity, IGeneralTree<Region, int>
+    public class Region : FullAuditedEntity, IGeneralTree<Region, int>
     {
         public string RegionCode { get; set; }
         public string Name { get; set; }

@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using Abp;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.EntityFrameworkCore.Repositories;
 using Abp.GeneralTree;
 using Abp.Threading;
 using Microsoft.Extensions.Configuration;
@@ -123,6 +124,11 @@ namespace RegionTree
                 abpBootstrapper.Initialize();
 
                 var unitOfWorkManager = abpBootstrapper.IocManager.Resolve<IUnitOfWorkManager>();
+
+                var dbContext = abpBootstrapper.IocManager.Resolve<RegionDbContext>();
+
+                dbContext.Database.EnsureDeleted();
+                dbContext.Database.EnsureCreated();
 
                 using (var uow = unitOfWorkManager.Begin())
                 {

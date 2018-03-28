@@ -6,7 +6,7 @@ namespace RegionTree
 {
     public class RegionDbContext : AbpDbContext
     {
-        public RegionDbContext(DbContextOptions options) : base(options)
+        public RegionDbContext(DbContextOptions<RegionDbContext> options) : base(options)
         {
         }
 

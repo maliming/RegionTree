@@ -23,7 +23,7 @@ namespace RegionTree
             */
 
             var builder = new DbContextOptionsBuilder<RegionDbContext>();
-            builder.UseSqlServer("Server=.;Database=Region;Trusted_Connection=True;");
+            builder.UseSqlServer("Server=.;Database=Region2;Trusted_Connection=True;");
 
             IocManager.IocContainer.Register(
                 Component
