@@ -13,6 +13,7 @@ using Abp.Threading;
 using Microsoft.Extensions.Configuration;
 using MoreLinq;
 using Newtonsoft.Json;
+using AutoMapper.QueryableExtensions;
 
 namespace RegionTree
 {
@@ -24,13 +25,12 @@ namespace RegionTree
         {
             var client = new HttpClient();
 
-            var regionWebResponseMessage = client
-                .GetAsync("http://www.mca.gov.cn/article/sj/tjbz/a/2018/201803131439.html")
-                .Result;
+            var regionWebResponseMessage = AsyncHelper.RunSync(() => client
+                .GetAsync("http://www.mca.gov.cn/article/sj/xzqh/2018/201804-12/20180708230813.html"));
 
             var regionResult = regionWebResponseMessage.Content.ReadAsStringAsync().Result;
 
-            var regionCodes = Regex.Matches(regionResult, @"<td class=[0-9a-zA-Z]{1,10}>(\d{6})<");
+            var regionCodes = Regex.Matches(regionResult, @"<td class=[0-9a-zA-Z]{1,10}>.*?(\d{6})<");
             var regionNames = Regex.Matches(regionResult, @"<td class=[0-9a-zA-Z]{1,10}>([^0-9a-zA-Z<>]+)<");
 
             if (regionCodes.Count != regionNames.Count)
@@ -117,8 +117,6 @@ namespace RegionTree
                 }
             });
 
-            File.WriteAllText("region.json", JsonConvert.SerializeObject(root, Formatting.Indented));
-
             using (var abpBootstrapper = AbpBootstrapper.Create<RegionModule>())
             {
                 abpBootstrapper.Initialize();
@@ -144,7 +142,9 @@ namespace RegionTree
 
                     unitOfWorkManager.Current.SaveChanges();
 
-                    var regionTree = regionRepository.GetAll().ToList().ToTree<Region, int>().ToList();
+                    var regionTree = regionRepository.GetAll().ProjectTo<RegionDto>().ToList();
+
+                    File.WriteAllText("region.json", JsonConvert.SerializeObject(regionTree.ToTreeDto<RegionDto, int>(), Formatting.Indented));
 
                     uow.Complete();
                 }

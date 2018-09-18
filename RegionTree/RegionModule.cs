@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Abp.AutoMapper;
 using Abp.EntityFrameworkCore;
 using Abp.GeneralTree;
 using Abp.Modules;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace RegionTree
 {
-    [DependsOn(typeof(AbpEntityFrameworkCoreModule), typeof(GeneralTreeModule))]
+    [DependsOn(typeof(AbpEntityFrameworkCoreModule), typeof(GeneralTreeModule), typeof(AbpAutoMapperModule))]
     public class RegionModule : AbpModule
     {
         /// <summary>
